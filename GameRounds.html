@@ -1,0 +1,99 @@
+﻿<html>
+
+ <body>
+ 	<div id="screen" style="width:100%; height:100%;">
+ 		<div id='Timer' style='width:100px; height:50px; position:absolute; top:10px; right:0px; text-align: center; background-color: green;line-height: 25px;'>Time left
+		<div id='TimeLeft' style='width:100px; height:25px; position:absolute; bottom:0px; text-align: center; line-height: 25px;'></div>
+		</div>
+		
+	</div>
+
+</body>
+<script>
+	var qtty;
+	var obj=document.getElementById("screen");
+	var time;
+	var t;
+	var timeLeft = document.getElementById("TimeLeft");
+	var totalBlocks;
+	var started;
+	var intervalId;
+	var level = 0;
+
+	startNewGame();
+	
+
+	function startNewGame (){
+		qtty=Math.round(Math.random()*15+5);
+		time = qtty- (level - qtty);
+		t = document.createTextNode(time);
+		totalBlocks = 0;
+		started = false;
+		timeLeft.appendChild(t);
+		for (i=0;i<qtty;i++){
+	 		func();
+		}
+	}
+
+
+	function func() {
+			var obj = document.createElement('div');
+			var leftPos = Math.random()*900;
+	 		var topPos = Math.random()*500;
+	 		var widthHeight = Math.random()*150+20;
+	 		var r = Math.round(Math.random()*255);
+	 		var g = Math.round(Math.random()*255);
+	 		var b = Math.round(Math.random()*255);
+			obj.setAttribute('style','width:'+widthHeight+'px;height:'+widthHeight+'px;background:rgb('+r+','+g+','+b+');border-radius:100%; position:absolute; top:'+topPos+'px; left:'+leftPos+'px;');
+
+			obj.className = 'circle';
+
+			document.body.appendChild(obj);
+	}
+
+	 
+
+	function removeCircle(event) {
+			if (event.target.className=='circle') {
+				totalBlocks++;
+				starter();
+				event.target.remove();
+				if (totalBlocks == qtty && time!=0){
+					alert("You win!");
+					clearInterval(intervalId);
+					timeLeft.firstChild.remove();
+					level++;
+					startNewGame();
+				}
+
+			}
+	}
+
+	document.body.onclick = removeCircle;
+	
+
+	function starter (){
+		if (started == false){
+			intervalId = setInterval(timeCounter,1000);
+			started = true;
+		}
+
+	} 
+
+	function timeCounter (){
+		time--;
+		timeLeft.innerHTML=time;
+		console.log('timeLeft'+time);
+
+		if (time == 0){
+					alert("Game Over");
+					clearInterval(intervalId);
+					timeLeft.firstChild.remove();
+					startNewGame();
+				}
+	}
+
+
+
+</script>
+</html>

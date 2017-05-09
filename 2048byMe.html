@@ -1,0 +1,280 @@
+﻿<html>
+
+ <body>
+ 	<div id="MainScreen" style="width:100%; height:100%; background-color:#AACE92;">
+ 		<div id='ScoreTitle' style='width:100px; height:50px; border-radius: 10px; position:absolute; top:10px; left:540px; text-align: center; background-color: #bbada0;line-height: 25px;'>Score
+		<div id='CurrentScore' style='width:100px; height:25px; position:absolute; bottom:0px; text-align: center; line-height: 25px;'></div>
+		</div>
+
+		<div id='BestScoreTitle' style='width:100px; height:50px; border-radius: 10px; position:absolute; top:10px; left:420px; text-align: center; background-color: #bbada0;line-height: 25px;'>Best Score
+		<div id='CurrentBestScore' style='width:100px; height:25px; position:absolute; bottom:0px; text-align: center; line-height: 25px;'></div>
+		</div>
+
+		<button id='StartButton' style='position: absolute; top:100px; left:540px;' onclick="startGame(event)">Start Game</button>
+
+		<div id='GameContainer' style="width:440px; height:440px; padding: 0px; border-radius: 5px; background-color: #bbada0; position:absolute; top:150px; left:200px;"></div>
+		
+	</div>
+
+</body>
+<script>
+	var screen=document.getElementById("MainScreen");
+	var scoreBlock = document.getElementById("CurrentScore");
+	var bestScoreBlock = document.getElementById("CurrentBestScore");
+	var start = document.getElementById("StartButton");
+	var container = document.getElementById("GameContainer");
+	var score = 0;
+	var bestScore = 0;
+	var cellsLeft = 0;
+	var notStarted = true;
+	var moved = false;
+	var canContinue = true;
+	var combined = false;
+	var colors = ["#EEE4DA","#EFD3A0","#EFBF68","#FFB62E","#F7924E","#F97217","#FFDE6F","#FBD03D","#F7C416","#C0FB5E","#ACF92B","rgba(238, 228, 218, 0.35)"];
+
+	bestScoreBlock.innerHTML = bestScore;
+	scoreBlock.innerHTML = score;
+
+
+	// Создаем область игры
+	var n = 4, m = 4;
+	var cells = [];
+	for (var i = 0; i < m; i++){
+	    cells[i] = [];
+	    for (var j = 0; j < n; j++){
+	        cells[i][j] = document.createElement('div');
+	        cells[i][j].setAttribute('style','width:100px; height:100px; margin: 5px; border-radius: 5px; background-color:rgba(238, 228, 218, 0.35); text-align: center; line-height: 100px; float:left; font-size:40pt; font-weight:bold;');
+			cells[i][j].id = 'Cell';
+			cells[i][j].innerHTML = '';
+	        container.appendChild(cells[i][j]);
+	}}
+
+	function startGame (event){
+		if (notStarted){
+		var x = Math.round(Math.random()*3);
+		var y = Math.round(Math.random()*3);
+		cells[x][y].innerHTML = 2;
+		cells[x][y].style.backgroundColor =colors[0];
+		do{
+		x = Math.round(Math.random()*3);
+		y = Math.round(Math.random()*3);
+		} while (cells[x][y].innerHTML != '')
+		cells[x][y].innerHTML = 2;
+		cells[x][y].style.backgroundColor =colors[0];
+		notStarted = false;
+		score = 0;
+		scoreBlock.innerHTML = score;
+		}
+	}
+
+	function addRandomBlock (){ 
+		do{
+		var x = Math.round(Math.random()*3);
+		var y = Math.round(Math.random()*3);
+		} while (cells[x][y].innerHTML != '')
+		if (Math.round(Math.random()*9) == 0){ 
+			cells[x][y].innerHTML = 4;
+		}else{ 
+			cells[x][y].innerHTML = 2;
+		}
+		
+	}
+
+window.onkeyup = function move (event){
+    cellsLeft = 0;
+    var oldK = 0;
+		if (event.keyCode=='38') { // up
+			for (var j = 0; j < 4; j++){
+	    		for (var i = 1; i < 4; i++){
+	    			if (cells[i][j].innerHTML != ''){
+	    				for (var k = i; k>0;k--){ 
+	    					if (cells[k-1][j].innerHTML == ''){ 
+	    						cells[k-1][j].innerHTML = cells[k][j].innerHTML;
+	    						cells[k][j].innerHTML = '';
+	    						moved = true;
+	    					} else if (combined == false && cells[k-1][j].innerHTML == cells[k][j].innerHTML){ 
+	    						cells[k-1][j].innerHTML = cells[k-1][j].innerHTML*2;
+	    						cells[k][j].innerHTML = '';
+	    						score = parseInt(score) + parseInt(cells[k-1][j].innerHTML);
+	    						moved = true;
+	    						combined = true;
+	    						oldK = k;
+	    					} else if (combined == true && (k - oldK) == 1 && cells[k-1][j].innerHTML == cells[k][j].innerHTML){ 
+	    						cells[k-1][j].innerHTML = cells[k-1][j].innerHTML*2;
+	    						cells[k][j].innerHTML = '';
+	    						score = parseInt(score) + parseInt(cells[k-1][j].innerHTML);
+	    						moved = true;
+	    					}
+	    				}
+					}
+				}
+				combined = false;
+			}
+	   	}else { 
+    		if (event.keyCode=='40') { // down
+    			for (var j = 0; j < 4; j++){
+	    		for (var i = 2; i >= 0; i--){
+	    			if (cells[i][j].innerHTML != ''){
+	    				for (var k = i; k<3;k++){ 
+	    					if (cells[k+1][j].innerHTML == ''){ 
+	    						cells[k+1][j].innerHTML = cells[k][j].innerHTML;
+	    						cells[k][j].innerHTML = '';
+	    						moved = true;
+	    					} else if (combined == false && cells[k+1][j].innerHTML == cells[k][j].innerHTML){ 
+	    						cells[k+1][j].innerHTML = cells[k+1][j].innerHTML*2;
+	    						cells[k][j].innerHTML = '';
+	    						score = parseInt(score) + parseInt(cells[k+1][j].innerHTML);
+	    						moved = true;
+	    						combined = true;
+	    						oldK = k;
+	    					} else if (combined == true && (oldK - k) == 1 && cells[k+1][j].innerHTML == cells[k][j].innerHTML){ 
+	    						cells[k+1][j].innerHTML = cells[k+1][j].innerHTML*2;
+	    						cells[k][j].innerHTML = '';
+	    						score = parseInt(score) + parseInt(cells[k+1][j].innerHTML);
+	    						moved = true;
+	    					}
+	    				}
+					}
+				}
+				combined = false;
+			}
+    	}else {
+    		if (event.keyCode=='37') { //left
+    			for (var i = 0; i < 4; i++){
+	    		for (var j = 1; j < 4; j++){
+	    			if (cells[i][j].innerHTML != ''){
+	    				for (var k = j; k>0;k--){ 
+	    					if (cells[i][k-1].innerHTML == ''){ 
+	    						cells[i][k-1].innerHTML = cells[i][k].innerHTML;
+	    						cells[i][k].innerHTML = '';
+	    						moved = true;
+	    					} else if (combined == false && cells[i][k-1].innerHTML == cells[i][k].innerHTML){ 
+	    						cells[i][k-1].innerHTML = cells[i][k-1].innerHTML*2;
+	    						cells[i][k].innerHTML = '';
+	    						score = parseInt(score) + parseInt(cells[i][k-1].innerHTML);
+	    						moved = true;
+	    						combined = true;
+	    						oldK = k;
+	    					} else if (combined == true && (k - oldK) == 1 && cells[i][k-1].innerHTML == cells[i][k].innerHTML){ 
+	    						cells[i][k-1].innerHTML = cells[i][k-1].innerHTML*2;
+	    						cells[i][k].innerHTML = '';
+	    						score = parseInt(score) + parseInt(cells[i][k-1].innerHTML);
+	    						moved = true;
+	    					}
+	    				}
+					}
+				}
+				combined = false;
+			}
+    	}else {
+    		if (event.keyCode=='39') { //right
+    			for (var i = 0; i < 4; i++){
+	    		for (var j = 2; j >= 0; j--){
+	    			if (cells[i][j].innerHTML != ''){
+	    				for (var k = j; k<3;k++){ 
+	    					if (cells[i][k+1].innerHTML == ''){ 
+	    						cells[i][k+1].innerHTML = cells[i][k].innerHTML;
+	    						cells[i][k].innerHTML = '';
+	    						moved = true;
+	    					} else if (combined == false && cells[i][k+1].innerHTML == cells[i][k].innerHTML){ 
+	    						cells[i][k+1].innerHTML = cells[i][k+1].innerHTML*2;
+	    						cells[i][k].innerHTML = '';
+	    						score = parseInt(score) + parseInt(cells[i][k+1].innerHTML);
+	    						moved = true;
+	    						combined = true;
+	    						oldK = k;
+	    					} else if (combined == true && (oldK - k) == 1 && cells[i][k+1].innerHTML == cells[i][k].innerHTML){ 
+	    						cells[i][k+1].innerHTML = cells[i][k+1].innerHTML*2;
+	    						cells[i][k].innerHTML = '';
+	    						score = parseInt(score) + parseInt(cells[i][k+1].innerHTML);
+	    						moved = true;
+	    					}
+	    				}
+					}
+				}
+				combined = false;
+			}
+    	}else {
+    		alert('Это не клавиша управления. Используйте стрелки вверх / вниз / влево / вправо');
+				}
+			}
+			}
+			}
+			if (moved){
+				addRandomBlock ();
+				moved = false;
+			}
+		
+		scoreBlock.innerHTML = score;
+		for (var i = 0; i < 4; i++){
+	    		for (var j = 0; j < 4; j++){
+	    			setColor(cells[i][j]);
+	    			if (cells[i][j].innerHTML == ''){
+	    				cellsLeft+=1;
+	    			}
+	    		}		
+	    }
+
+	    if (cellsLeft == 0){
+	    	canMove();
+	    }
+}
+
+	function setColor (cellBlock){ 
+		switch (cellBlock.innerHTML){
+			case '' : cellBlock.style.backgroundColor = colors[11]; break;
+			case '2': cellBlock.style.backgroundColor = colors[0]; break;
+			case '4': cellBlock.style.backgroundColor = colors[1]; break;
+			case '8': cellBlock.style.backgroundColor = colors[2]; break;
+			case '16': cellBlock.style.backgroundColor = colors[3]; break;
+			case '32': cellBlock.style.backgroundColor = colors[4]; break;
+			case '64': cellBlock.style.backgroundColor = colors[5]; break;
+			case '128': cellBlock.style.backgroundColor = colors[6]; break;
+			case '256': cellBlock.style.backgroundColor = colors[7]; break;
+			case '512': cellBlock.style.backgroundColor = colors[8]; break;
+			case '1024': cellBlock.style.backgroundColor = colors[9]; break;
+			case '2048': cellBlock.style.backgroundColor = colors[10]; break;
+		}
+		
+	}
+
+	function canMove () {
+		canContinue = false;
+		for (var i = 0; i < 3; i++){
+	    		for (var j = 0; j < 4; j++){
+	    			if (cells[i][j].innerHTML == cells[i+1][j].innerHTML){
+	    				canContinue = true;
+	    			}
+	    		}		
+	    }
+	    for (var i = 0; i < 4; i++){
+	    		for (var j = 0; j < 3; j++){
+	    			if (cells[i][j].innerHTML == cells[i][j+1].innerHTML){
+	    				canContinue = true;
+	    			}
+	    		}		
+	    }
+	    if (canContinue == false){
+	    	alert('Game Over. Please try again:)');
+	    	if (score > bestScore){
+	    		bestScore = score;
+	    		bestScoreBlock.innerHTML = bestScore;
+	    	}
+	    	clearField();
+	    	notStarted = true;
+	    	canContinue = true;
+	    }
+	}
+
+	function clearField (){
+		for (var i = 0; i < 4; i++){
+	    		for (var j = 0; j < 4; j++){
+	    			cells[i][j].innerHTML = '';
+	    			cells[i][j].style.backgroundColor = colors[11];
+	    		}		
+	    }
+	}
+
+
+</script>
+</html>

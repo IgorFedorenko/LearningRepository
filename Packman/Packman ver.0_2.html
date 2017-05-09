@@ -1,0 +1,79 @@
+﻿<div id='mainScreen' style='width:100%; height:100%;'>
+	<div id='score' style='width:100px; height:50px; position:absolute; top:10px; right:0px; text-align: center; background-color: green;line-height: 25px;'>Total apples
+		<div id='totalScore' style='width:100px; height:25px; position:absolute; bottom:0px; text-align: center; line-height: 25px;'>0</div>
+	</div>
+
+</div>
+
+<script>
+var mainScreen = document.getElementById('mainScreen');
+var screenHeight=mainScreen.offsetHeight;
+console.log(screenHeight);
+var screenWidth=mainScreen.offsetWidth;
+console.log(screenWidth);
+var pacHeight=100;
+var pacWidth=100;
+var pacTop = Math.round(Math.random()*(screenHeight-100));
+var pacLeft = Math.round(Math.random()*(screenWidth-100));
+	mainScreen.innerHTML += "<div id='apple' style='width:100px; height:100px; border-radius:25%; position:absolute; top:"+Math.random()*(screenHeight-200)+"px; left:"+Math.random()*(screenWidth-100)+"px;'><img src='apple1.png' alt='Apple' style='width:100px; height:100px; border-radius:25%;'></div>";
+	mainScreen.innerHTML += "<img id='pacMan' src='pacman1.jpg' alt='Pacman' style='width:100px; height:100px; border-radius:25%; position:absolute; top:"+pacTop+"px; left:"+pacLeft+"px; -webkit-transform: rotate(0deg); transition: top 0.5s, left 0.5s, transform 0.5s;'>";
+
+	window.onkeyup = function (event){
+		if (event.keyCode=='38') {
+			if (pacTop - 50 > 0){
+				pacTop-=50;
+				pacMan.style.transform = "rotate(-90deg)";
+			}else{
+				alert ('Не бейся обстену');
+			}
+	   	}else { 
+    		if (event.keyCode=='40') {
+    			if (pacTop + 130 < screenHeight){
+				pacTop+=50;
+				pacMan.style.transform = "rotate(90deg)";
+			}else{
+				alert ('Не бейся обстену');
+			}
+    	}else {
+    		if (event.keyCode=='39') {
+    			if (pacLeft + 130 < screenWidth){
+				pacLeft+=50;
+				pacMan.style.transform = "rotate(0deg)";
+			}else{
+				alert ('Не бейся обстену');
+			}
+    	}else {
+    		if (event.keyCode=='37') {
+    			if (pacLeft - 50 > 0){
+				pacLeft-=50;
+				pacMan.style.transform = "rotate(180deg)";
+			}else{
+				alert ('Не бейся обстену');
+			}
+    	}else {
+    		alert('Это не клавиша управления');
+	}
+	}
+	}
+	}
+		pacMan.style.top=pacTop;
+		pacMan.style.left=pacLeft;
+
+		if (Math.abs(parseInt(pacMan.style.top) - parseInt(apple.style.top)) < 60 && Math.abs(parseInt(pacMan.style.left) - parseInt(apple.style.left)) < 60){
+			totalScore.innerHTML++;
+			if (totalScore.innerHTML == 30){
+				alert('Это Победа!');
+				totalScore.innerHTML=0;
+			}
+			do{
+			apple.style.top = Math.round(Math.random()*(screenHeight-100));
+			console.log(Math.abs(pacTop - parseInt(apple.style.top)));
+			apple.style.left = Math.round(Math.random()*(screenWidth-100));
+			console.log(Math.abs(pacLeft - parseInt(apple.style.left)));
+			}while (Math.abs(pacTop - parseInt(apple.style.top)) < 100 || Math.abs(pacLeft - parseInt(apple.style.left)) < 100)
+		}
+	}
+
+
+
+</script>
